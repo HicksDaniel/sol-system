@@ -6,15 +6,18 @@ export default function createCircleSpriteTexture(
   borderColor = "black"
 ) {
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = size;
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = canvas.height = size * ratio;
   const ctx = canvas.getContext("2d");
-  const r = size * 0.5;
+  const half = size * 0.5;
+  const border = size * 0.1;
+  const radius = half - border;
   if (!ctx) {
     throw new Error("Failed to get 2D context for canvas");
   }
   ctx.clearRect(0, 0, size, size);
   ctx.beginPath();
-  ctx.arc(r, r, r, 0, Math.PI * 2);
+  ctx.arc(half, half, radius, 0, Math.PI * 2);
   ctx.closePath();
 
   if (fillColor) {
@@ -23,7 +26,7 @@ export default function createCircleSpriteTexture(
   }
 
   if (borderColor) {
-    ctx.lineWidth = size * 0.005;
+    ctx.lineWidth = border;
     ctx.strokeStyle = borderColor;
     ctx.stroke();
   }

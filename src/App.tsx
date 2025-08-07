@@ -1,14 +1,21 @@
 import "./App.css";
 import * as THREE from "three";
 import { useRef, useEffect } from "react";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { EarthSystem } from "./components/planetarysystems/earthsystem";
 import { HeliocentricGalaxyView } from "./components/solarsystem/heliocentricgalaxyview";
 import { MarsSystem } from "./components/planetarysystems/marssystem";
+import { SolSystem } from "./components/solarsystem/solsystem";
+import { VenusSystem } from "./components/planetarysystems/venussystem";
+import { MercurySystem } from "./components/planetarysystems/mercurysystem";
+import { JupiterSystem } from "./components/planetarysystems/jupitersystem";
+import { SaturnSystem } from "./components/planetarysystems/saturnsystem";
+import { UranusSystem } from "./components/planetarysystems/uranussystem";
+import { NeptuneSystem } from "./components/planetarysystems/neptunesystem";
 
 function App() {
   const sceneRef = useRef<HTMLCanvasElement>(null);
-  const currentCameraRef = useRef<THREE.Camera>();
+  const currentCameraRef = useRef<THREE.Camera | null>(null);
   const systemCamerasRef = useRef<Map<string, THREE.Camera>>(new Map());
   const planetarySystemsRef = useRef<THREE.Group[]>([]);
 
@@ -25,7 +32,7 @@ function App() {
       0.1,
       999999999
     );
-    mainCamera.position.setZ(50);
+    mainCamera.position.setZ(6000);
     currentCameraRef.current = mainCamera;
 
     const renderer = new THREE.WebGLRenderer({
@@ -36,15 +43,40 @@ function App() {
 
     const controls = new OrbitControls(mainCamera, renderer.domElement);
 
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+    controls.update();
     // Add heliocentric galaxy view
     const heliocentricGalaxyView = HeliocentricGalaxyView();
     solarScene.add(heliocentricGalaxyView);
 
+    const directional = new THREE.DirectionalLight(0xffffff, 0.8);
+    directional.position.set(1, 2, 1);
+    directional.castShadow = true;
+    solarScene.add(directional);
+
     // Add planetary systems
     const earthSystem = EarthSystem();
     const marsSystem = MarsSystem();
+    const solSystem = SolSystem();
+    const venusSystem = VenusSystem();
+    const mercurySystem = MercurySystem();
+    const jupiterSystem = JupiterSystem();
+    const saturnSystem = SaturnSystem();
+    const uranusSystem = UranusSystem();
+    const neptuneSystem = NeptuneSystem();
 
-    const systems = [earthSystem, marsSystem];
+    const systems = [
+      earthSystem,
+      marsSystem,
+      solSystem,
+      venusSystem,
+      mercurySystem,
+      jupiterSystem,
+      saturnSystem,
+      uranusSystem,
+      neptuneSystem,
+    ];
     planetarySystemsRef.current = systems;
 
     // Register all system cameras
@@ -126,6 +158,7 @@ function App() {
       cancelAnimationFrame(frameId);
       solarScene.remove(earthSystem);
       solarScene.remove(marsSystem);
+      solarScene.remove(solSystem);
       solarScene.remove(heliocentricGalaxyView);
       renderer.dispose();
     };
