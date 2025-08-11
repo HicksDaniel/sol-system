@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 export default function createCircleSpriteTexture(
-  size = 2048,
+  size = 1024,
   fillColor = "white",
   borderColor = "black"
 ) {
@@ -10,7 +10,7 @@ export default function createCircleSpriteTexture(
   canvas.width = canvas.height = size * ratio;
   const ctx = canvas.getContext("2d");
   const half = size * 0.5;
-  const border = size * 0.1;
+  const border = size * 0.05;
   const radius = half - border;
   if (!ctx) {
     throw new Error("Failed to get 2D context for canvas");
@@ -32,10 +32,10 @@ export default function createCircleSpriteTexture(
   }
   const texture = new THREE.CanvasTexture(canvas);
 
-  // Make sure WebGL doesn't attempt to flip or premultiply alpha on upload
+
   texture.flipY = false;
   texture.premultiplyAlpha = false;
   texture.needsUpdate = true;
 
-  return texture; // Return the configured texture, not a new one
+  return texture;
 }
