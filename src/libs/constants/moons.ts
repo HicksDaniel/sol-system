@@ -2,7 +2,7 @@ const moonConfig = {
   diameter: 0.2727,
   orbitRadius: 30,
   eccentricity: 0.0549,
-  texture: "solarimages/8k_moon.jpg",
+  texture: "solarimages/2k_mercury.jpg",
   sprite: {
     color: "transparent",
     borderColor: "grey",
@@ -26,7 +26,7 @@ const phobosConfig = {
   diameter: 0.00174,
   orbitRadius: 0.735,
   eccentricity: 0.01,
-  texture: "solarimages/8k_moon.jpg",
+  texture: "solarimages/2k_mercury.jpg",
   sprite: {
     color: "transparent",
     borderColor: "grey",
@@ -62,7 +62,7 @@ const deimosConfig = {
     opacity: 0.8,
     lineWidth: 2,
   },
-  texture: "solarimages/8k_moon.jpg",
+  texture: "solarimages/2k_mercury.jpg",
   orbitalPeriod: 1.2624,
   rotationPeriod: 1.2624,
   ellipseRotation: Math.PI * 0.025,
@@ -86,7 +86,7 @@ const ioConfig = {
     opacity: 0.8,
     lineWidth: 2,
   },
-  texture: "solarimages/8k_moon.jpg",
+  texture: "solarimages/2k_mercury.jpg",
   orbitalPeriod: 1.769,
   rotationPeriod: 1.769,
   ellipseRotation: Math.PI * 0.025,
@@ -98,7 +98,7 @@ const europaConfig = {
   diameter: 0.245,
   orbitRadius: 52.7,
   eccentricity: 0.009,
-  texture: "solarimages/8k_moon.jpg",
+  texture: "solarimages/2k_mercury.jpg",
   sprite: {
     color: "transparent",
     borderColor: "grey",
@@ -122,7 +122,7 @@ const ganymedeConfig = {
   diameter: 0.4134,
   orbitRadius: 84.0,
   eccentricity: 0.0013,
-  texture: "solarimages/8k_moon.jpg",
+  texture: "solarimages/2k_mercury.jpg",
   sprite: {
     color: "transparent",
     borderColor: "grey",
@@ -146,7 +146,7 @@ const callistoConfig = {
   diameter: 0.3784,
   orbitRadius: 147.8,
   eccentricity: 0.0074,
-  texture: "solarimages/8k_moon.jpg",
+  texture: "solarimages/2k_mercury.jpg",
   sprite: {
     color: "transparent",
     borderColor: "grey",

@@ -19,10 +19,10 @@ interface PlanetConfig {
     scaleFactor: number;
   };
   orbitalPath?: {
-    visible: boolean;
-    color?: number;
+    visible?: boolean;
+    color?: string;
     opacity?: number;
-    isLine: boolean;
+    isLine?: boolean;
     lineWidth?: number;
   };
   systemId: string;
@@ -33,6 +33,7 @@ interface PlanetConfig {
   ellipseRotation?: number; // rotation of the ellipse
   orbitalInclination?: number; // orbital plane inclination in radians
   cameraDistance?: number; // distance from planet to camera
+  parentSystemId?: string; // ID of parent system (if any)
 }
 
 export function createPlanetSystem(
@@ -78,7 +79,7 @@ export function createPlanetSystem(
       eccentricity: number = 0,
       orbitRadius: number,
       ellipseRotation: number = 0,
-      color: number = 0x444444,
+      color: string = "0x444444",
       opacity: number = 0.4,
       lineWidth: number = 2,
       segments: number = 2048
@@ -115,9 +116,9 @@ export function createPlanetSystem(
       config.eccentricity || 0,
       config.orbitRadius,
       config.ellipseRotation || 0,
-      config.orbitalPath.color || 0x444444,
-      config.orbitalPath.opacity || 0.4,
-      config.orbitalPath.lineWidth || 2
+      config.orbitalPath?.color || "0x444444",
+      config.orbitalPath?.opacity || 0.4,
+      config.orbitalPath?.lineWidth || 2
     );
 
     if (config.orbitalInclination) {
@@ -338,9 +339,9 @@ export function createPlanetSystem(
     controls.target.copy(mesh.position);
   };
 
-  const cameraClose = () => {
-    return camera.position.distanceTo(mesh.position) < config.orbitRadius * 2;
-  };
+  // const cameraClose = () => {
+  //   return camera.position.distanceTo(mesh.position) < config.orbitRadius * 2;
+  // };
 
   group.userData = {
     camera,

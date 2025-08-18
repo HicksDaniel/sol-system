@@ -1,21 +1,21 @@
 const scale = 1000;
 
-const ortCloudConfig = {
-  diameter: 999,
-  orbitRadius: 0,
-  texture: "solarimages/4k_sun.jpg",
-  systemId: "solSystem",
-  axialTilt: Math.PI * (0.00001 / 180),
-  orbitalPeriod: 0,
-  // sprite: {
-  //   color: "transparent",
-  //   borderColor: "lightgrey",
-  //   opacity: 0.6,
-  //   scaleFactor: scale * 0.774,
-  // },
-  rotationalPeriod: 0,
-  orbitalInclination: 0,
-};
+// const ortCloudConfig = {
+//   diameter: 999,
+//   orbitRadius: 0,
+//   texture: "solarimages/4k_sun.jpg",
+//   systemId: "solSystem",
+//   axialTilt: Math.PI * (0.00001 / 180),
+//   orbitalPeriod: 0,
+//   // sprite: {
+//   //   color: "transparent",
+//   //   borderColor: "lightgrey",
+//   //   opacity: 0.6,
+//   //   scaleFactor: scale * 0.774,
+//   // },
+//   rotationalPeriod: 0,
+//   orbitalInclination: 0,
+// };
 const solConfig = {
   diameter: 1000,
   orbitRadius: 0,
@@ -82,7 +82,7 @@ const earthConfig = {
   diameter: 1,
   orbitRadius: 11740,
   axialTilt: Math.PI * (23.4 / 180),
-  texture: "solarimages/8k_earth_daymap.jpg",
+  texture: "solarimages/2k_earth_daymap.jpg",
   sprite: {
     color: "rgba(0,136,255,0.1)",
     borderColor: "#0088ff",
@@ -227,5 +227,4 @@ export {
   saturnConfig,
   uranusConfig,
   neptuneConfig,
-  ortCloudConfig,
 };

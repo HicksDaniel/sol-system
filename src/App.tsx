@@ -13,7 +13,6 @@ import { JupiterSystem } from "./components/planetarysystems/jupitersystem";
 import { SaturnSystem } from "./components/planetarysystems/saturnsystem";
 import { UranusSystem } from "./components/planetarysystems/uranussystem";
 import { NeptuneSystem } from "./components/planetarysystems/neptunesystem";
-import { OrtCloudSystem } from "./components/solarsystem/ortcloudsystem";
 
 function App() {
   const sceneRef = useRef<HTMLCanvasElement>(null);
@@ -64,7 +63,6 @@ function App() {
     const saturnSystem = SaturnSystem();
     const uranusSystem = UranusSystem();
     const neptuneSystem = NeptuneSystem();
-    const ortCloudSystem = OrtCloudSystem();
 
     // Collect all systems including child systems
     const allSystems = [
@@ -77,7 +75,6 @@ function App() {
       saturnSystem,
       uranusSystem,
       neptuneSystem,
-      ortCloudSystem,
     ];
 
     // Add child systems to the main systems array
@@ -85,6 +82,7 @@ function App() {
       if (system.userData.childSystems) {
         system.userData.childSystems.forEach((childSystem: THREE.Group) => {
           allSystems.push(childSystem);
+          childSystem.userData.parentSystemId = system.userData.systemId;
           addChildSystems(childSystem); // Recursively add nested children
         });
       }
@@ -189,33 +187,19 @@ function App() {
     const animate = () => {
       planetarySystemsRef.current.forEach((system) => {
         if (system.userData.animate) {
-          // For child systems, we need to pass their parent's position
-          if (system.userData.systemId === "lunaSystem") {
-            const earthSystem = planetarySystemsRef.current.find(
-              (s) => s.userData.systemId === "earthSystem"
+          let parentPosition: THREE.Vector3 | undefined;
+
+          // Check if this system has a parent
+          if (system.userData.parentSystemId) {
+            const parentSystem = planetarySystemsRef.current.find(
+              (s) => s.userData.systemId === system.userData.parentSystemId
             );
-            if (earthSystem && earthSystem.userData.mesh) {
-              system.userData.animate(
-                earthSystem.userData.mesh.position,
-                currentCameraRef.current
-              );
+            if (parentSystem && parentSystem.userData.mesh) {
+              parentPosition = parentSystem.userData.mesh.position;
             }
-          } else if (
-            system.userData.systemId === "phobosSystem" ||
-            system.userData.systemId === "deimosSystem"
-          ) {
-            const marsSystem = planetarySystemsRef.current.find(
-              (s) => s.userData.systemId === "marsSystem"
-            );
-            if (marsSystem && marsSystem.userData.mesh) {
-              system.userData.animate(
-                marsSystem.userData.mesh.position,
-                currentCameraRef.current
-              );
-            }
-          } else {
-            system.userData.animate(undefined, currentCameraRef.current);
           }
+
+          system.userData.animate(parentPosition, currentCameraRef.current);
         }
       });
 
@@ -241,16 +225,15 @@ function App() {
       solarScene.remove(saturnSystem);
       solarScene.remove(uranusSystem);
       solarScene.remove(neptuneSystem);
-      solarScene.remove(ortCloudSystem);
       solarScene.remove(solSystem);
       solarScene.remove(heliocentricGalaxyView);
       renderer.dispose();
     };
   }, []);
 
-  document.addEventListener("mousedown", () => {
-    console.log(currentCameraRef.current);
-  });
+  // document.addEventListener("mousedown", () => {
+  //   console.log(currentCameraRef.current);
+  // });
 
   return (
     <>
