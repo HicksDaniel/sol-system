@@ -1,7 +1,7 @@
 const scale = 1000;
 
 const ortCloudConfig = {
-  radius: 999,
+  diameter: 999,
   orbitRadius: 0,
   texture: "solarimages/4k_sun.jpg",
   systemId: "solSystem",
@@ -17,7 +17,7 @@ const ortCloudConfig = {
   orbitalInclination: 0,
 };
 const solConfig = {
-  radius: 1000,
+  diameter: 1000,
   orbitRadius: 0,
   texture: "solarimages/4k_sun.jpg",
   systemId: "solSystem",
@@ -33,19 +33,20 @@ const solConfig = {
   orbitalInclination: 0,
 };
 const mercuryConfig = {
-  radius: 0.383,
+  diameter: 0.383,
   orbitRadius: 4545,
   axialTilt: Math.PI * (0.01 / 180),
+
   texture: "solarimages/2k_mercury.jpg",
   sprite: {
     color: "transparent",
-    borderColor: "grey",
+    borderColor: "lightgrey",
     opacity: 0.6,
     scaleFactor: scale,
   },
   orbitalPath: {
     visible: true,
-    color: "grey",
+    color: "lightgrey",
     opacity: 0.8,
     lineWidth: 2,
   },
@@ -56,7 +57,7 @@ const mercuryConfig = {
 };
 
 const venusConfig = {
-  radius: 0.949,
+  diameter: 0.949,
   orbitRadius: 8476,
   axialTilt: Math.PI * (177.36 / 180),
   texture: "solarimages/2k_venus_atmosphere.jpg",
@@ -78,12 +79,12 @@ const venusConfig = {
   systemId: "venusSystem",
 };
 const earthConfig = {
-  radius: 1,
+  diameter: 1,
   orbitRadius: 11740,
   axialTilt: Math.PI * (23.4 / 180),
-  texture: "solarimages/2k_earth_daymap.jpg",
+  texture: "solarimages/8k_earth_daymap.jpg",
   sprite: {
-    color: "transparent",
+    color: "rgba(0,136,255,0.1)",
     borderColor: "#0088ff",
     opacity: 0.6,
     scaleFactor: scale,
@@ -102,7 +103,7 @@ const earthConfig = {
 };
 
 const marsConfig = {
-  radius: 0.53,
+  diameter: 0.53,
   orbitRadius: 17891,
   axialTilt: Math.PI * (25.2 / 180),
   texture: "solarimages/2k_mars.jpg",
@@ -125,7 +126,7 @@ const marsConfig = {
 };
 
 const jupiterConfig = {
-  radius: 11.209,
+  diameter: 11.209,
   orbitRadius: 47300,
   axialTilt: Math.PI * (3.13 / 180),
   texture: "solarimages/2k_jupiter.jpg",
@@ -148,19 +149,19 @@ const jupiterConfig = {
 };
 
 const saturnConfig = {
-  radius: 9.45,
+  diameter: 9.45,
   orbitRadius: 77830,
   axialTilt: Math.PI * (26.73 / 180),
   texture: "solarimages/2k_saturn.jpg",
   sprite: {
     color: "transparent",
-    borderColor: "blue",
+    borderColor: "beige",
     opacity: 0.6,
     scaleFactor: scale,
   },
   orbitalPath: {
     visible: true,
-    color: "blue",
+    color: "beige",
     opacity: 0.8,
     lineWidth: 2,
   },
@@ -171,7 +172,7 @@ const saturnConfig = {
 };
 
 const uranusConfig = {
-  radius: 4.01,
+  diameter: 4.01,
   orbitRadius: 118600,
   axialTilt: Math.PI * (97.77 / 180),
   texture: "solarimages/2k_uranus.jpg",
@@ -194,7 +195,7 @@ const uranusConfig = {
 };
 
 const neptuneConfig = {
-  radius: 3.88,
+  diameter: 3.88,
   orbitRadius: 142900,
   axialTilt: Math.PI * (28.32 / 180),
   texture: "solarimages/2k_neptune.jpg",

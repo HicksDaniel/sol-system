@@ -1,5 +1,5 @@
 const moonConfig = {
-  radius: 0.2727,
+  diameter: 0.2727,
   orbitRadius: 30,
   eccentricity: 0.0549,
   texture: "solarimages/8k_moon.jpg",
@@ -23,15 +23,15 @@ const moonConfig = {
 };
 
 const phobosConfig = {
-  radius: 0.00174,
+  diameter: 0.00174,
   orbitRadius: 0.735,
   eccentricity: 0.01,
   texture: "solarimages/8k_moon.jpg",
   sprite: {
     color: "transparent",
     borderColor: "grey",
-    opacity: 0.3,
-    scaleFactor: 50,
+    opacity: 1,
+    scaleFactor: 250,
   },
   orbitalPath: {
     visible: true,
@@ -41,20 +41,20 @@ const phobosConfig = {
   },
   orbitalPeriod: 0.3191,
   rotationPeriod: 0.3191,
-  systemId: "marsPhobosSystem",
+  systemId: "phobosSystem",
   orbitalInclination: Math.PI * (1.093 / 180),
   ellipseRotation: Math.PI * 0.025,
 };
 
 const deimosConfig = {
-  radius: 0.00099,
+  diameter: 0.00099,
   orbitRadius: 1.84,
   eccentricity: 0.00024,
   sprite: {
     color: "transparent",
     borderColor: "grey",
-    opacity: 0.3,
-    scaleFactor: 50,
+    opacity: 1,
+    scaleFactor: 250,
   },
   orbitalPath: {
     visible: true,
@@ -67,7 +67,7 @@ const deimosConfig = {
   rotationPeriod: 1.2624,
   ellipseRotation: Math.PI * 0.025,
   orbitalInclination: Math.PI * (1.8 / 180),
-  systemId: "marsDeimosSystem",
+  systemId: "deimosSystem",
 };
 
 export { moonConfig, phobosConfig, deimosConfig };

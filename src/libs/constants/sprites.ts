@@ -32,7 +32,6 @@ export default function createCircleSpriteTexture(
   }
   const texture = new THREE.CanvasTexture(canvas);
 
-
   texture.flipY = false;
   texture.premultiplyAlpha = false;
   texture.needsUpdate = true;
