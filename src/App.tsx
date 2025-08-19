@@ -6,20 +6,19 @@ import { EarthSystem } from "./components/planetarysystems/earthsystem";
 import { HeliocentricGalaxyView } from "./components/solarsystem/heliocentricgalaxyview";
 import { MarsSystem } from "./components/planetarysystems/marssystem";
 import { SolSystem } from "./components/solarsystem/solsystem";
-import { useTimeManager } from "./libs/utils/timeManager";
 import { VenusSystem } from "./components/planetarysystems/venussystem";
 import { MercurySystem } from "./components/planetarysystems/mercurysystem";
 import { JupiterSystem } from "./components/planetarysystems/jupitersystem";
 import { SaturnSystem } from "./components/planetarysystems/saturnsystem";
 import { UranusSystem } from "./components/planetarysystems/uranussystem";
 import { NeptuneSystem } from "./components/planetarysystems/neptunesystem";
+import TimeControl from "./components/overlays/timeControl";
 
 function App() {
   const sceneRef = useRef<HTMLCanvasElement>(null);
   const currentCameraRef = useRef<THREE.Camera | null>(null);
   const systemCamerasRef = useRef<Map<string, THREE.Camera>>(new Map());
   const planetarySystemsRef = useRef<THREE.Group[]>([]);
-  const [timeMultiplier, setTimeMultiplier] = useTimeManager();
 
   useEffect(() => {
     let frameId: number;
@@ -184,7 +183,17 @@ function App() {
 
     renderer.domElement.addEventListener("dblclick", handleDoubleClick);
 
-    const animate = () => {
+    let lastFrameTime = 0;
+    const fps = 60;
+    const frameDuration = 1000 / fps;
+
+    const animate = (currentTime: number = 0) => {
+      if (currentTime - lastFrameTime < frameDuration) {
+        frameId = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = currentTime;
+
       planetarySystemsRef.current.forEach((system) => {
         if (system.userData.animate) {
           let parentPosition: THREE.Vector3 | undefined;
@@ -238,44 +247,7 @@ function App() {
   return (
     <>
       <canvas ref={sceneRef} id="bg" />
-      <div
-        style={{
-          position: "absolute",
-          top: "20px",
-          left: "20px",
-          zIndex: 1000,
-          color: "white",
-          fontFamily: "Arial, sans-serif",
-        }}
-      >
-        <label
-          htmlFor="speed-control"
-          style={{ display: "block", marginBottom: "5px" }}
-        >
-          Time Speed: {timeMultiplier}x
-        </label>
-        <select
-          id="speed-control"
-          value={timeMultiplier}
-          onChange={(e) => setTimeMultiplier(Number(e.target.value))}
-          style={{
-            padding: "5px",
-            fontSize: "14px",
-            backgroundColor: "#333",
-            color: "white",
-            border: "1px solid #555",
-            borderRadius: "4px",
-          }}
-        >
-          <option value={0}>0x (Very Slow)</option>
-          <option value={0.1}>1/10x (Very Slow)</option>
-          <option value={0.25}>1/4x (Slow)</option>
-          <option value={1}>1x (Normal)</option>
-          <option value={10}>10x (Fast)</option>
-          <option value={100}>100x (Very Fast)</option>
-          <option value={1000}>1000x (Ultra Fast)</option>
-        </select>
-      </div>
+      <TimeControl />
     </>
   );
 }

@@ -17,7 +17,7 @@ const scale = 1000;
 //   orbitalInclination: 0,
 // };
 const solConfig = {
-  diameter: 1000,
+  diameter: 109,
   orbitRadius: 0,
   texture: "solarimages/4k_sun.jpg",
   systemId: "solSystem",
