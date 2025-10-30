@@ -23,7 +23,7 @@ const moonConfig = {
 };
 
 const phobosConfig = {
-  diameter: 0.00174,
+  diameter: 0.100174,
   orbitRadius: 0.735,
   eccentricity: 0.01,
   texture: "solarimages/2k_mercury.jpg",
