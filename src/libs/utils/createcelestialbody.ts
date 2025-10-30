@@ -128,15 +128,16 @@ export function createPlanetSystem(
   }
 
   const texture = new THREE.TextureLoader().load(config.texture);
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(config.diameter, 64, 64),
-    new THREE.MeshBasicMaterial({ map: texture })
-  );
+  const sphereGeometry = new THREE.SphereGeometry(config.diameter, 64, 64);
+  const sphereMaterial = new THREE.MeshStandardMaterial({ map: texture });
+  const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+
   mesh.position.set(config.orbitRadius, 0, 0);
   if (config.axialTilt) {
     mesh.rotation.x = config.axialTilt;
   }
-  mesh.renderOrder = 0;
 
   group.add(mesh);
 
