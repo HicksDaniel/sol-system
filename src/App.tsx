@@ -16,8 +16,8 @@ import TimeControl from "./components/overlays/timeControl";
 
 function App() {
   const sceneRef = useRef<HTMLCanvasElement>(null);
-  const currentCameraRef = useRef<THREE.Camera | null>(null);
-  const systemCamerasRef = useRef<Map<string, THREE.Camera>>(new Map());
+  const lockedSystemRef = useRef<THREE.Group | null>(null);
+  const previousLockedPositionRef = useRef<THREE.Vector3 | null>(null);
   const planetarySystemsRef = useRef<THREE.Group[]>([]);
 
   useEffect(() => {
@@ -30,11 +30,10 @@ function App() {
     const mainCamera = new THREE.PerspectiveCamera(
       60,
       window.innerWidth / window.innerHeight,
-      0.1,
+      1,
       999999999
     );
-    mainCamera.position.setZ(6000);
-    currentCameraRef.current = mainCamera;
+    mainCamera.position.set(-8000, 2500, 4000);
 
     const renderer = new THREE.WebGLRenderer({
       canvas: sceneRef.current,
@@ -91,33 +90,7 @@ function App() {
 
     planetarySystemsRef.current = allSystems;
 
-    allSystems.forEach((system) => {
-      solarScene.add(system);
-      if (system.userData.camera && system.userData.systemId) {
-        systemCamerasRef.current.set(
-          system.userData.systemId,
-          system.userData.camera
-        );
-
-        if (system.userData.setupControls) {
-          system.userData.setupControls(renderer.domElement);
-        }
-      }
-    });
-
-    const switchToCamera = (systemId: string) => {
-      const camera = systemCamerasRef.current.get(systemId);
-
-      if (camera) {
-        currentCameraRef.current = camera;
-      }
-    };
-
-    const switchToMainCamera = () => {
-      currentCameraRef.current = mainCamera;
-      controls.object = mainCamera;
-      controls.update();
-    };
+    allSystems.forEach((system) => solarScene.add(system));
 
     // Add function to collect all systems recursively
     const collectAllSystems = (systems: THREE.Group[]): THREE.Group[] => {
@@ -138,47 +111,43 @@ function App() {
     };
 
     const handleDoubleClick = (event: MouseEvent) => {
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
-
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, currentCameraRef.current!);
-
       const allSystems = collectAllSystems(planetarySystemsRef.current);
 
-      let closestIntersection: any = null;
       let closestSystem: THREE.Group | null = null;
+      let closestScreenDistance = Infinity;
+      const CLICK_THRESHOLD_PX = 80;
 
       for (const system of allSystems) {
-        const intersects = raycaster.intersectObjects(system.children, true);
-        if (intersects.length > 0) {
-          const meshIntersect = intersects.find(
-            (i) => i.object.type !== "Sprite"
-          );
-          const bestIntersect = meshIntersect || intersects[0];
+        if (!system.userData.mesh) continue;
 
-          // Prioritize child systems: if distances are equal, prefer the system with fewer children (more specific)
-          if (
-            !closestIntersection ||
-            bestIntersect.distance < closestIntersection.distance ||
-            (bestIntersect.distance === closestIntersection.distance &&
-              intersects.length < closestIntersection.intersectCount)
-          ) {
-            closestIntersection = bestIntersect;
-            closestIntersection.intersectCount = intersects.length; // Store for comparison
-            closestSystem = system;
-          }
+        const worldPosition = system.userData.mesh.position.clone();
+        const screenPosition = worldPosition.project(mainCamera);
+
+        const screenX = (screenPosition.x * 0.5 + 0.5) * window.innerWidth;
+        const screenY = (-screenPosition.y * 0.5 + 0.5) * window.innerHeight;
+
+        const dx = screenX - event.clientX;
+        const dy = screenY - event.clientY;
+        const screenDistance = Math.sqrt(dx * dx + dy * dy);
+
+        if (screenDistance < closestScreenDistance) {
+          closestScreenDistance = screenDistance;
+          closestSystem = system;
         }
       }
 
-      if (closestSystem) {
-        switchToCamera(closestSystem.userData.systemId);
+      if (closestSystem && closestScreenDistance <= CLICK_THRESHOLD_PX) {
+        const meshPosition = closestSystem.userData.mesh.position;
+        const offset = closestSystem.userData.cameraOffset;
+        mainCamera.position.copy(meshPosition).add(offset);
+        controls.target.copy(meshPosition);
+        lockedSystemRef.current = closestSystem;
+        previousLockedPositionRef.current = meshPosition.clone();
         return;
       }
 
-      switchToMainCamera();
+      lockedSystemRef.current = null;
+      previousLockedPositionRef.current = null;
     };
 
     renderer.domElement.addEventListener("dblclick", handleDoubleClick);
@@ -194,6 +163,8 @@ function App() {
       }
       lastFrameTime = currentTime;
 
+      const lockedSystemId = lockedSystemRef.current?.userData.systemId;
+
       planetarySystemsRef.current.forEach((system) => {
         if (system.userData.animate) {
           let parentPosition: THREE.Vector3 | undefined;
@@ -208,19 +179,30 @@ function App() {
             }
           }
 
-          system.userData.animate(parentPosition, currentCameraRef.current);
+          system.userData.animate(parentPosition, lockedSystemId);
         }
       });
 
-      if (currentCameraRef.current === mainCamera) {
-        controls.update();
+      // If a system is locked, translate the camera by how far the body moved this frame
+      const locked = lockedSystemRef.current;
+      if (locked && locked.userData.mesh) {
+        const currentPosition = locked.userData.mesh.position;
+        const previous = previousLockedPositionRef.current;
+
+        if (previous) {
+          const delta = currentPosition.clone().sub(previous);
+          mainCamera.position.add(delta);
+          controls.target.add(delta);
+        }
+
+        previousLockedPositionRef.current = currentPosition.clone();
       }
 
-      renderer.render(solarScene, currentCameraRef.current!);
+      controls.update();
+      renderer.render(solarScene, mainCamera);
       renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
       frameId = requestAnimationFrame(animate);
     };
-
     animate();
 
     return () => {

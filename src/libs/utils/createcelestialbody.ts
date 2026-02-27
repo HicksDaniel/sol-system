@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { solarDay } from "../constants/time";
 import createCircleSpriteTexture from "../constants/sprites";
 import { timeManager } from "./timeManager";
@@ -42,7 +41,6 @@ export function createPlanetSystem(
 ) {
   const group = new THREE.Group();
   let orbitAngle = 0;
-  let controls: OrbitControls;
 
   // Shared function to calculate elliptical position
   const calculateEllipticalPosition = (
@@ -185,28 +183,21 @@ export function createPlanetSystem(
     });
   }
 
-  const camera = new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth / window.innerHeight,
-    0.0015,
-    999999999
-  );
-
   const cameraDistance = config.cameraDistance || config.diameter * 10 + 0.5;
-  camera.position.set(
-    config.orbitRadius + cameraDistance,
+  const cameraOffset = new THREE.Vector3(
+    cameraDistance,
     cameraDistance * 0.3,
     cameraDistance * 0.5
   );
-  camera.lookAt(config.orbitRadius, 0, 0);
 
   const inclination = config.orbitalInclination || 0;
-  const initialY = inclination !== 0 ? 0 * Math.sin(inclination) : 0;
-  let previousPosition = new THREE.Vector3(config.orbitRadius, initialY, 0);
+  const initialBaseZ = Math.sin(orbitAngle) * config.orbitRadius;
+  const initialY = inclination !== 0 ? initialBaseZ * Math.sin(inclination) : 0;
+  const previousPosition = new THREE.Vector3(config.orbitRadius, initialY, 0);
 
   const animate = (
     parentPosition?: THREE.Vector3,
-    currentActiveCamera?: THREE.Camera
+    lockedSystemId?: string
   ) => {
     const rotationalPeriod = config.rotationalPeriod ?? 1;
     const currentTimeMultiplier = timeManager.getMultiplier();
@@ -282,16 +273,6 @@ export function createPlanetSystem(
       }
     }
 
-    if (controls) {
-      const currentY = mesh.position.y;
-      const movement = new THREE.Vector3(
-        newX - previousPosition.x,
-        currentY - previousPosition.y,
-        newZ - previousPosition.z
-      );
-      controls.object.position.add(movement);
-    }
-
     const newY = mesh.position.y;
     mesh.position.set(newX, newY, newZ);
     previousPosition.set(newX, newY, newZ);
@@ -299,24 +280,19 @@ export function createPlanetSystem(
     if (sprite) {
       sprite.position.set(newX, newY, newZ);
 
-      // Hide sprite if current camera belongs to this system or any child system
-      const isCurrentSystemActive = currentActiveCamera === camera;
+      // Hide sprite if this system or any child system is the locked system
+      const isCurrentSystemActive = lockedSystemId === config.systemId;
       const isChildSystemActive = childSystems.some(
-        (childSystem) => childSystem.userData.camera === currentActiveCamera
+        (childSystem) => childSystem.userData.systemId === lockedSystemId
       );
 
       sprite.visible = !isCurrentSystemActive && !isChildSystemActive;
     }
 
-    if (controls) {
-      controls.target.copy(mesh.position);
-      controls.update();
-    }
-
     // Update child systems with this system's position as their parent
     childSystems.forEach((childSystem) => {
       if (childSystem && childSystem.userData.animate) {
-        childSystem.userData.animate(mesh.position, currentActiveCamera);
+        childSystem.userData.animate(mesh.position, lockedSystemId);
         // Update orbital paths to follow parent
         if (childSystem.children) {
           childSystem.children.forEach((child) => {
@@ -334,20 +310,11 @@ export function createPlanetSystem(
     }
   };
 
-  const setupControls = (domElement: HTMLElement) => {
-    controls = new OrbitControls(camera, domElement);
-    controls.target.copy(mesh.position);
-  };
-
-  // const cameraClose = () => {
-  //   return camera.position.distanceTo(mesh.position) < config.orbitRadius * 2;
-  // };
 
   group.userData = {
-    camera,
+    cameraOffset,
     systemId: config.systemId,
     animate,
-    setupControls,
     mesh,
     sprite,
     childSystems,
